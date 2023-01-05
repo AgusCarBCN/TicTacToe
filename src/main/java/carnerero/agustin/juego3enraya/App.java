@@ -23,7 +23,7 @@ public class App {
 
 	public static void main(String[] args) {
 
-		String[] options = { "Human vs Machine", "Human vs Human" };
+		String[] options = { "Machine(X) vs Human(O)","Human(X) vs Machine(O)", "Human vs Human" };
 		ControllerPlayer controller;
 		UIManager.put("OptionPane.background", Color.BLACK);
 		UIManager.put("Panel.background", Color.YELLOW);
@@ -42,12 +42,14 @@ public class App {
 			player1 = new Player(1);
 			player2 = new Player(2);
 			controller = ControllerPlayer.getInstance(window3R, player1, player2);
-		} else if (opcion == "Human vs Machine") {
+		} else if (opcion == "Machine(X) vs Human(O)") {
 			player2 = new Player(2);
 			machine = new Machine(window3R.getBoard());
-
-			controller = ControllerPlayer.getInstance2(window3R, player2, machine);
-
+			controller = ControllerPlayer.getInstance(window3R, machine, player2);
+		}else if(opcion=="Human(X) vs Machine(O)") {
+			player1=new Player(1);
+			machine = new Machine(window3R.getBoard());
+			controller = ControllerPlayer.getInstance(window3R, player1, machine);
 		}
 	}
 

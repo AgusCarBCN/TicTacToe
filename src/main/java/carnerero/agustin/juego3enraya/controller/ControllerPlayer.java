@@ -65,7 +65,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	}
 
-	private ControllerPlayer(Window3R window3R, Player player2, Machine machine) {
+	private ControllerPlayer(Window3R window3R, Machine machine,Player player2) {
 
 		this.player2 = player2;
 		this.machine = machine;
@@ -75,6 +75,18 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		initController();
 
 	}
+	private ControllerPlayer(Window3R window3R, Player player1, Machine machine) {
+
+		this.player1 = player1;
+		this.machine = machine;
+		this.window3R = window3R;
+		player1.setPlay(true);
+		machine.setPlay(false);
+		initController();
+
+	}
+	
+	
 
 	public static ControllerPlayer getInstance(Window3R window3R, Player player1, Player player2) {
 		if (controller == null) {
@@ -83,9 +95,15 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		return controller;
 	}
 
-	public static ControllerPlayer getInstance2(Window3R window3R, Player player2, Machine machine) {
+	public static ControllerPlayer getInstance(Window3R window3R,Machine machine,Player player2) {
 		if (controller == null) {
-			controller = new ControllerPlayer(window3R, player2, machine);
+			controller = new ControllerPlayer(window3R,machine,player2);
+		}
+		return controller;
+	}
+	public static ControllerPlayer getInstance(Window3R window3R,Player player1,Machine machine) {
+		if (controller == null) {
+			controller = new ControllerPlayer(window3R,player1,machine);
 		}
 		return controller;
 	}
@@ -181,6 +199,22 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			break;
 		}
 	}
+	private void playAgain3(String message) {
+		UIManager.put("OptionPane.background", color1);
+		UIManager.put("Panel.background", color2);
+		int res = JOptionPane.showConfirmDialog(window3R, message, "", JOptionPane.YES_NO_OPTION);
+		switch (res) {
+		case JOptionPane.YES_OPTION:
+			board.cleanBoard(gridCells);
+			machine.setWinner(false);
+			player1.setWinner(false);
+			addListener(gridCells);
+			break;
+		case JOptionPane.NO_OPTION:
+			System.exit(res);
+			break;
+		}
+	}
 
 	public void playSound(String path) {
 		File f = new File(path);
@@ -210,18 +244,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	}
 
-	private void changeTurn(Machine machine, Player player2) {
-
-		player2.setPlay(true);
-		machine.setPlay(false);
-
-		if (!this.machine.isPlay()) {
-			window3R.getMessage().setText(turnX);
-		} else if (this.machine.isPlay()) {
-			window3R.getMessage().setText(turnO);
-		}
-
-	}
+	
 
 	private void changeTurn(char markGridCell, char mark, Player player2, Machine machine) {
 
@@ -229,17 +252,30 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			machine.setPlay(true);
 			player2.setPlay(false);
 		}
-		if (!this.player2.isPlay()) {
+		if (!player2.isPlay()) {
 			window3R.getMessage().setText(turnX);
-		} else if (this.player2.isPlay()) {
+		} else if (player2.isPlay()) {
 			window3R.getMessage().setText(turnO);
 		}
 
 	}
+	private void changeTurn2(char markGridCell, char mark, Player player1, Machine machine) {
 
-	public void moveComputer() {
+		if (markGridCell == mark) {
+			machine.setPlay(true);
+			player1.setPlay(false);
+		}
+		if (!player1.isPlay()) {
+			window3R.getMessage().setText(turnO);
+		} else if (player1.isPlay()) {
+			window3R.getMessage().setText(turnX);
+		}
 
-		machine.markCell(machine.machinePlays(board), new Mark(MARK_X, 'X'));
+	}
+
+	public void moveComputerFirst() {
+
+		machine.markCell(machine.machinePlaysFirst(board), new Mark(MARK_X, 'X'));
 		machine.setPlay(false);
 		player2.setPlay(true);
 		if (!this.machine.isPlay()) {
@@ -249,7 +285,18 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		}
 		playSound(MARK_SOUND);
 	}
+	public void moveComputerSecond() {
 
+		machine.markCell(machine.machinePlaysSecond(board), new Mark(MARK_O, 'O'));
+		machine.setPlay(false);
+		player1.setPlay(true);
+		if (!this.machine.isPlay()) {
+			window3R.getMessage().setText(turnX);
+		} else if (this.machine.isPlay()) {
+			window3R.getMessage().setText(turnO);
+		}
+		playSound(MARK_SOUND);
+	}
 	@Override
 	public void mouseMoved(MouseEvent e) {
 
@@ -258,7 +305,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 
-		if (player1 != null && player1.isPlay() && !player1.isWinner() && !player2.isWinner()) {
+		if (player1 != null && player2!=null && player1.isPlay() && !player1.isWinner() && !player2.isWinner()) {
 
 			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
 				player1.markCell(gridCells[0][0], new Mark(MARK_X, 'X'));
@@ -330,7 +377,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					window3R.getMessage().setText(turnO);
 				}
 			}
-		} else if (player1 != null && player2.isPlay() && !player1.isWinner() && !player2.isWinner()) {
+		} else if (player1 != null && player2!=null && player2.isPlay() && !player1.isWinner() && !player2.isWinner()) {
 
 			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
 				player2.markCell(gridCells[0][0], new Mark(MARK_O, 'O'));
@@ -473,6 +520,78 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					window3R.getMessage().setText(turnX);
 				}
 			}
+		}if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner()) {
+
+			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
+				player1.markCell(gridCells[0][0], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[0][0].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[0][1].getGridCellLabel() && gridCells[0][1].isEmpty()) {
+				player1.markCell(gridCells[0][1], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[0][1].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[0][2].getGridCellLabel() && gridCells[0][2].isEmpty()) {
+				player1.markCell(gridCells[0][2], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[0][2].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[1][0].getGridCellLabel() && gridCells[1][0].isEmpty()) {
+				player1.markCell(gridCells[1][0], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[1][0].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[1][1].getGridCellLabel() && gridCells[1][1].isEmpty()) {
+				player1.markCell(gridCells[1][1], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[1][1].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[1][2].getGridCellLabel() && gridCells[1][2].isEmpty()) {
+				player1.markCell(gridCells[1][2], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[1][2].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[2][0].getGridCellLabel() && gridCells[2][0].isEmpty()) {
+				player1.markCell(gridCells[2][0], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[2][0].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[2][1].getGridCellLabel() && gridCells[2][1].isEmpty()) {
+				player1.markCell(gridCells[2][1], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[2][1].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			} else if (e.getSource() == gridCells[2][2].getGridCellLabel() && gridCells[2][2].isEmpty()) {
+				player1.markCell(gridCells[2][2], new Mark(MARK_X, 'X'));
+				changeTurn2(gridCells[2][2].getMark(), 'X', player1, machine);
+				playSound(MARK_SOUND);
+			}
+
+			if (!board.isPlenty()) {
+				player1.setWinner(board.isWinner(gridCells, LINEA_X));
+				if (player1.isWinner()) {
+					score1++;
+					removeListener(gridCells);
+					window3R.getScore1().setText(Integer.toString(score1));
+					window3R.getMessage().setText(winX);
+					playSound(GAME_WIN);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnO);
+
+				}
+			} else if (board.isPlenty()) {
+				player1.setWinner(board.isWinner(gridCells, LINEA_X));
+				if (player1.isWinner()) {
+					score1++;
+					removeListener(gridCells);
+					window3R.getScore1().setText(Integer.toString(score1));
+					window3R.getMessage().setText(winX);
+					playSound(GAME_WIN);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnO);
+				} else {
+					empates++;
+					window3R.getScore3().setText(Integer.toString(empates));
+					window3R.getMessage().setText(tied);
+					playSound(GAME_TIED);
+					removeListener(gridCells);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnO);
+				}
+			}
 		}
 	}
 
@@ -613,8 +732,8 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 		} else if (e.getSource() == window3R.getComputer() && player1 == null && machine.isPlay() && !player2.isWinner()
 				&& !machine.isWinner()) {
-
-			moveComputer();
+			
+			moveComputerFirst();
 
 			if (!board.isPlenty()) {
 				machine.setWinner(board.isWinner(gridCells, LINEA_X));
@@ -646,6 +765,44 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					removeListener(gridCells);
 					playAgain2(playAgain);
 					window3R.getMessage().setText(turnO);
+				}
+			}
+
+		}else if (e.getSource() == window3R.getComputer() && player2 == null && machine.isPlay() && !player1.isWinner()
+				&& !machine.isWinner()) {
+			
+			moveComputerSecond();
+
+			if (!board.isPlenty()) {
+				machine.setWinner(board.isWinner(gridCells, LINEA_O));
+				if (machine.isWinner()) {
+					score2++;
+					removeListener(gridCells);
+					window3R.getScore2().setText(Integer.toString(score2));
+					window3R.getMessage().setText(winO);
+					playSound(GAME_WIN);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnX);
+
+				}
+			} else if (board.isPlenty()) {
+				machine.setWinner(board.isWinner(gridCells, LINEA_O));
+				if (machine.isWinner()) {
+					score2++;
+					removeListener(gridCells);
+					window3R.getScore2().setText(Integer.toString(score2));
+					window3R.getMessage().setText(winO);
+					playSound(GAME_WIN);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnX);
+				} else {
+					empates++;
+					window3R.getScore3().setText(Integer.toString(empates));
+					window3R.getMessage().setText(tied);
+					playSound(GAME_TIED);
+					removeListener(gridCells);
+					playAgain3(playAgain);
+					window3R.getMessage().setText(turnX);
 				}
 			}
 

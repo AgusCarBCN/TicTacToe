@@ -15,7 +15,7 @@ public class Machine extends AbstractPlayer {
 
 	}
 
-	public GridCell machinePlays(BoardGrid board) {
+	public GridCell machinePlaysFirst(BoardGrid board) {
 
 		GridCell[][] gridCells = board.getGridCells();
 		int bestScore = Integer.MIN_VALUE;
@@ -37,6 +37,30 @@ public class Machine extends AbstractPlayer {
 		return bestMove;
 	}
 
+	public GridCell machinePlaysSecond(BoardGrid board) {
+
+		GridCell[][] gridCells = board.getGridCells();
+		int bestScore = Integer.MAX_VALUE;
+		int score = 0;
+		GridCell bestMove = null;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (gridCells[i][j].isEmpty()) {
+					gridCells[i][j].setMark('O');
+					score = miniMax(board, true);
+					gridCells[i][j].setMark(' ');
+					if (score < bestScore) {
+						bestScore = score;
+						bestMove = gridCells[i][j];
+					}
+				}
+			}
+		}
+		return bestMove;
+	}
+	
+	
+	
 	private int miniMax(BoardGrid board, boolean isMaximazing) {
 
 		GridCell[][] gridCells = board.getGridCells();
