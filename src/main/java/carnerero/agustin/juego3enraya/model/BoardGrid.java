@@ -9,14 +9,7 @@ public class BoardGrid extends JPanel {
 
 	private JLabel boardGrid;
 	private GridCell[][] gridCells;
-	private final String LXXX = "XXX";
-	private final String LOOO = "OOO";
-	private final String LO_O = "O O";
-	private final String LOO_ = "OO ";
-	private final String L_OO = " OO";
-	private final String LX_X = "X X";
-	private final String LXX_ = "XX ";
-	private final String L_XX = " XX";
+	
 
 	public BoardGrid() {
 		// Create Board

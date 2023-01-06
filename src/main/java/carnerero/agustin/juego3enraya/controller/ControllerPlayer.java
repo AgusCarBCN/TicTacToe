@@ -8,13 +8,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -22,7 +20,6 @@ import carnerero.agustin.juego3enraya.model.BoardGrid;
 import carnerero.agustin.juego3enraya.model.GridCell;
 import carnerero.agustin.juego3enraya.model.Machine;
 import carnerero.agustin.juego3enraya.model.Mark;
-import java.awt.Robot;
 import carnerero.agustin.juego3enraya.model.Player;
 import carnerero.agustin.juego3enraya.view.Window3R;
 
@@ -43,7 +40,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	private final String MARK_SOUND = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/markInBoard.wav";
 	private final String GAME_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/winGame.wav";
 	private final String GAME_TIED = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/tiedGame.wav";
-
+	private final String INTRO = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/exit.wav";
 	private String MARK_X;
 	private String MARK_O;
 	private static ControllerPlayer controller;
@@ -62,6 +59,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		this.player1.setPlay(true);
 		this.player2.setPlay(false);
 		initController();
+		
 
 	}
 
@@ -83,7 +81,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		player1.setPlay(true);
 		machine.setPlay(false);
 		initController();
-
+		
 	}
 	
 	
@@ -117,7 +115,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		window3R.getbackground().addActionListener(this);
 		window3R.getLanguage().addActionListener(this);
 		window3R.getComputer().addActionListener(this);
-
 		MARK_X = MARK_XY;
 		MARK_O = MARK_OY;
 		this.score1 = 0;
@@ -145,6 +142,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		window3R.getPlayer1().setText(playerX);
 		window3R.getPlayer2().setText(playerO);
 		window3R.getEmpate().setText(tiedM);
+		playSound(INTRO);
 
 	}
 
@@ -179,6 +177,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			break;
 		case JOptionPane.NO_OPTION:
 			System.exit(res);
+			
 			break;
 		}
 	}
@@ -195,6 +194,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			addListener(gridCells);
 			break;
 		case JOptionPane.NO_OPTION:
+			
 			System.exit(res);
 			break;
 		}

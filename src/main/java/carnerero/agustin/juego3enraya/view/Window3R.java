@@ -2,14 +2,11 @@ package carnerero.agustin.juego3enraya.view;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
+
 
 import carnerero.agustin.juego3enraya.model.BoardGrid;
 

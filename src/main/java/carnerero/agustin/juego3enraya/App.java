@@ -29,10 +29,7 @@ public class App {
 		UIManager.put("Panel.background", Color.YELLOW);
 		Player player1 = null;
 		Player player2 = null;
-		Machine machine = null;
-		boolean isPlenty = false;
-		final String MARK_XY = "/carnerero/agustin/juego3enraya/resources/cruzYellow.png";
-		final String MARK_SOUND = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/markInBoard.wav";
+		Machine machine = null;		
 		UIManager.put("text", Color.YELLOW);
 
 		Window3R window3R = new Window3R();
