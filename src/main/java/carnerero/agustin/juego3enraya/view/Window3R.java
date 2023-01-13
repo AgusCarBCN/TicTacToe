@@ -2,14 +2,11 @@ package carnerero.agustin.juego3enraya.view;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
+
 
 import carnerero.agustin.juego3enraya.model.BoardGrid;
 
@@ -18,7 +15,7 @@ public class Window3R extends JFrame {
 	private BoardGrid board;
 	private JLabel player1, player2, empate, score1, score2, score3, message;
 	private PanelGame panel3R;
-	private JButton backGround, language, computer;
+	private JButton backGround, language;
 
 	public Window3R() {
 
@@ -44,13 +41,7 @@ public class Window3R extends JFrame {
 
 			backGround = new JButton("Claro");
 			language = new JButton("English");
-			computer = new JButton("Computer");
-
-			computer.setBounds(140, 660, 110, 35);
-			computer.setFont(font16);
-			computer.setForeground(Color.YELLOW);
-			computer.setBackground(Color.BLACK);
-			computer.setFocusable(false);
+			
 
 			backGround.setFont(font16);
 			backGround.setBounds(25, 660, 100, 35);
@@ -78,23 +69,20 @@ public class Window3R extends JFrame {
 			empate.setFont(font16);
 			empate.setBounds(155, 420, 100, 100);
 			score1.setFont(font20);
-			score1.setBounds(55, 485, 20, 20);
+			score1.setBounds(55, 485, 60, 30);
 			score2.setFont(font20);
-			score2.setBounds(305, 485, 20, 20);
+			score2.setBounds(305, 485, 60, 30);
 			score3.setFont(font20);
-			score3.setBounds(185, 485, 20, 20);
+			score3.setBounds(185, 485, 60, 30);			
 			message.setFont(font16);
 			message.setBounds(100, 540, 220, 30);
-
 			player1.setForeground(Color.YELLOW);
 			player2.setForeground(Color.YELLOW);
 			empate.setForeground(Color.YELLOW);
 			message.setForeground(Color.YELLOW);
-
 			score1.setForeground(Color.YELLOW);
 			score2.setForeground(Color.YELLOW);
 			score3.setForeground(Color.YELLOW);
-
 			board = new BoardGrid();
 			add(board.getBoardGrid());
 			add(player1);
@@ -106,7 +94,7 @@ public class Window3R extends JFrame {
 			add(message);
 			add(backGround);
 			add(language);
-			add(computer);
+			
 
 		}
 	}
@@ -155,8 +143,6 @@ public class Window3R extends JFrame {
 		return empate;
 	}
 
-	public JButton getComputer() {
-		return computer;
-	}
+	
 
 }

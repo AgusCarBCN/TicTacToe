@@ -8,24 +8,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+
+import carnerero.agustin.juego3enraya.model.APlayer;
 import carnerero.agustin.juego3enraya.model.BoardGrid;
 import carnerero.agustin.juego3enraya.model.GridCell;
 import carnerero.agustin.juego3enraya.model.Machine;
 import carnerero.agustin.juego3enraya.model.Mark;
-import java.awt.Robot;
 import carnerero.agustin.juego3enraya.model.Player;
 import carnerero.agustin.juego3enraya.view.Window3R;
-
 
 public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
@@ -40,10 +40,11 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	private final String MARK_OY = "/carnerero/agustin/juego3enraya/resources/Oyellow.png";
 	private final String MARK_XB = "/carnerero/agustin/juego3enraya/resources/cruz.png";
 	private final String MARK_OB = "/carnerero/agustin/juego3enraya/resources/O.png";
-	private final String MARK_SOUND = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/markInBoard.wav";
-	private final String GAME_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/winGame.wav";
+	private final String XMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/XMove.wav";
+	private final String OMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/OMove.wav";
+	private final String GAME_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/win.wav";
 	private final String GAME_TIED = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/tiedGame.wav";
-
+	private final String INTRO = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/exit.wav";
 	private String MARK_X;
 	private String MARK_O;
 	private static ControllerPlayer controller;
@@ -61,17 +62,34 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		this.player2 = player2;
 		this.player1.setPlay(true);
 		this.player2.setPlay(false);
+		this.player1.setIdPlayer(1);
+		this.player2.setIdPlayer(2);
 		initController();
 
 	}
 
-	private ControllerPlayer(Window3R window3R, Player player2, Machine machine) {
+	private ControllerPlayer(Window3R window3R, Machine machine, Player player2) {
 
 		this.player2 = player2;
 		this.machine = machine;
 		this.window3R = window3R;
 		player2.setPlay(false);
 		machine.setPlay(true);
+		this.machine.setIdPlayer(1);
+		this.player2.setIdPlayer(2);
+		initController();
+
+	}
+
+	private ControllerPlayer(Window3R window3R, Player player1, Machine machine) {
+
+		this.player1 = player1;
+		this.machine = machine;
+		this.window3R = window3R;
+		player1.setPlay(true);
+		machine.setPlay(false);
+		this.player1.setIdPlayer(1);
+		this.machine.setIdPlayer(2);
 		initController();
 
 	}
@@ -83,23 +101,29 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		return controller;
 	}
 
-	public static ControllerPlayer getInstance2(Window3R window3R, Player player2, Machine machine) {
+	public static ControllerPlayer getInstance(Window3R window3R, Machine machine, Player player2) {
 		if (controller == null) {
-			controller = new ControllerPlayer(window3R, player2, machine);
+			controller = new ControllerPlayer(window3R, machine, player2);
+		}
+		return controller;
+	}
+
+	public static ControllerPlayer getInstance(Window3R window3R, Player player1, Machine machine) {
+		if (controller == null) {
+			controller = new ControllerPlayer(window3R, player1, machine);
 		}
 		return controller;
 	}
 
 	private void initController() {
 
+		playSound(INTRO);
 		window3R.getMessage().setText("Turno de jugador(X)");
 		board = window3R.getBoard();
 		gridCells = board.getGridCells();
 		addListener(gridCells);
 		window3R.getbackground().addActionListener(this);
 		window3R.getLanguage().addActionListener(this);
-		window3R.getComputer().addActionListener(this);
-
 		MARK_X = MARK_XY;
 		MARK_O = MARK_OY;
 		this.score1 = 0;
@@ -127,7 +151,10 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		window3R.getPlayer1().setText(playerX);
 		window3R.getPlayer2().setText(playerO);
 		window3R.getEmpate().setText(tiedM);
-
+		if (machine != null && machine.isPlay()) {
+			machinePlays(true);
+			changeTurn(machine, player2, turnO);
+		}
 	}
 
 	private void addListener(GridCell[][] gridCells) {
@@ -148,7 +175,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		}
 	}
 
-	private void playAgain(String message) {
+	private void playAgain(String message, APlayer player1, APlayer player2) {
 		UIManager.put("OptionPane.background", color1);
 		UIManager.put("Panel.background", color2);
 		int res = JOptionPane.showConfirmDialog(window3R, message, "", JOptionPane.YES_NO_OPTION);
@@ -165,24 +192,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		}
 	}
 
-	private void playAgain2(String message) {
-		UIManager.put("OptionPane.background", color1);
-		UIManager.put("Panel.background", color2);
-		int res = JOptionPane.showConfirmDialog(window3R, message, "", JOptionPane.YES_NO_OPTION);
-		switch (res) {
-		case JOptionPane.YES_OPTION:
-			board.cleanBoard(gridCells);
-			machine.setWinner(false);
-			player2.setWinner(false);
-			addListener(gridCells);
-			break;
-		case JOptionPane.NO_OPTION:
-			System.exit(res);
-			break;
-		}
-	}
-
-	public void playSound(String path) {
+	private void playSound(String path) {
 		File f = new File(path);
 		try {
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
@@ -196,282 +206,86 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	}
 
-	private void changeTurn(char markGridCell, char mark, Player player1, Player player2) {
-
-		if (markGridCell == mark) {
-			player2.setPlay(true);
-			player1.setPlay(false);
-		}
-		if (!this.player1.isPlay()) {
-			window3R.getMessage().setText(turnO);
-		} else if (this.player1.isPlay()) {
-			window3R.getMessage().setText(turnX);
-		}
-
-	}
-
-	private void changeTurn(Machine machine, Player player2) {
-
+	private void changeTurn(APlayer player1, APlayer player2, String turn) {
+		player1.setPlay(false);
 		player2.setPlay(true);
-		machine.setPlay(false);
-
-		if (!this.machine.isPlay()) {
-			window3R.getMessage().setText(turnX);
-		} else if (this.machine.isPlay()) {
-			window3R.getMessage().setText(turnO);
-		}
-
+		window3R.getMessage().setText(turn);
 	}
 
-	private void changeTurn(char markGridCell, char mark, Player player2, Machine machine) {
+	private void machinePlays(boolean max) {
 
-		if (markGridCell == mark) {
-			machine.setPlay(true);
-			player2.setPlay(false);
+		if (max) {
+			machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
+			playSound(XMOVE);
+		} else {
+			machine.markCell(machine.machinePlaysMin(board), new Mark(MARK_O, 'O'));
+			playSound(OMOVE);
 		}
-		if (!this.player2.isPlay()) {
-			window3R.getMessage().setText(turnX);
-		} else if (this.player2.isPlay()) {
-			window3R.getMessage().setText(turnO);
-		}
-
-	}
-
-	public void moveComputer() {
-
-		machine.markCell(machine.machinePlays(board), new Mark(MARK_X, 'X'));
-		machine.setPlay(false);
-		player2.setPlay(true);
-		if (!this.machine.isPlay()) {
-			window3R.getMessage().setText(turnO);
-		} else if (this.machine.isPlay()) {
-			window3R.getMessage().setText(turnX);
-		}
-		playSound(MARK_SOUND);
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 
-		if (player1 != null && player1.isPlay() && !player1.isWinner() && !player2.isWinner()) {
+		if (player1 != null && player2 != null && player1.isPlay() && !player1.isWinner() && !player2.isWinner()) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
+						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
+						changeTurn(player1, player2, turnO);
+						playSound(XMOVE);
 
-			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
-				player1.markCell(gridCells[0][0], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[0][0].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][1].getGridCellLabel() && gridCells[0][1].isEmpty()) {
-				player1.markCell(gridCells[0][1], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[0][1].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][2].getGridCellLabel() && gridCells[0][2].isEmpty()) {
-				player1.markCell(gridCells[0][2], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[0][2].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][0].getGridCellLabel() && gridCells[1][0].isEmpty()) {
-				player1.markCell(gridCells[1][0], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[1][0].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][1].getGridCellLabel() && gridCells[1][1].isEmpty()) {
-				player1.markCell(gridCells[1][1], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[1][1].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][2].getGridCellLabel() && gridCells[1][2].isEmpty()) {
-				player1.markCell(gridCells[1][2], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[1][2].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][0].getGridCellLabel() && gridCells[2][0].isEmpty()) {
-				player1.markCell(gridCells[2][0], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[2][0].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][1].getGridCellLabel() && gridCells[2][1].isEmpty()) {
-				player1.markCell(gridCells[2][1], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[2][1].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][2].getGridCellLabel() && gridCells[2][2].isEmpty()) {
-				player1.markCell(gridCells[2][2], new Mark(MARK_X, 'X'));
-				changeTurn(gridCells[2][2].getMark(), 'X', player1, player2);
-				playSound(MARK_SOUND);
-			}
-
-			if (!board.isPlenty()) {
-				player1.setWinner(board.isWinner(gridCells, LINEA_X));
-				if (player1.isWinner()) {
-					score1++;
-					removeListener(gridCells);
-					window3R.getScore1().setText(Integer.toString(score1));
-					window3R.getMessage().setText(winX);
-					playSound(GAME_WIN);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnO);
-
-				}
-			} else if (board.isPlenty()) {
-				player1.setWinner(board.isWinner(gridCells, LINEA_X));
-				if (player1.isWinner()) {
-					score1++;
-					removeListener(gridCells);
-					window3R.getScore1().setText(Integer.toString(score1));
-					window3R.getMessage().setText(winX);
-					playSound(GAME_WIN);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnO);
-				} else {
-					empates++;
-					window3R.getScore3().setText(Integer.toString(empates));
-					window3R.getMessage().setText(tied);
-					playSound(GAME_TIED);
-					removeListener(gridCells);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnO);
+					}
 				}
 			}
-		} else if (player1 != null && player2.isPlay() && !player1.isWinner() && !player2.isWinner()) {
-
-			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
-				player2.markCell(gridCells[0][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][0].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][1].getGridCellLabel() && gridCells[0][1].isEmpty()) {
-				player2.markCell(gridCells[0][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][1].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][2].getGridCellLabel() && gridCells[0][2].isEmpty()) {
-				player2.markCell(gridCells[0][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][2].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][0].getGridCellLabel() && gridCells[1][0].isEmpty()) {
-				player2.markCell(gridCells[1][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][0].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][1].getGridCellLabel() && gridCells[1][1].isEmpty()) {
-				player2.markCell(gridCells[1][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][1].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][2].getGridCellLabel() && gridCells[1][2].isEmpty()) {
-				player2.markCell(gridCells[1][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][2].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][0].getGridCellLabel() && gridCells[2][0].isEmpty()) {
-				player2.markCell(gridCells[2][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][0].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][1].getGridCellLabel() && gridCells[2][1].isEmpty()) {
-				player2.markCell(gridCells[2][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][1].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][2].getGridCellLabel() && gridCells[2][2].isEmpty()) {
-				player2.markCell(gridCells[2][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][2].getMark(), 'O', player2, player1);
-				playSound(MARK_SOUND);
-			}
-
-			if (!board.isPlenty()) {
-				player2.setWinner(board.isWinner(gridCells, LINEA_O));
-				if (player2.isWinner()) {
-					score2++;
-					removeListener(gridCells);
-					window3R.getScore2().setText(Integer.toString(score2));
-					window3R.getMessage().setText(winO);
-					playSound(GAME_WIN);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnX);
-				}
-			} else if (board.isPlenty()) {
-				player2.setWinner(board.isWinner(gridCells, LINEA_O));
-				if (player2.isWinner()) {
-					score2++;
-					removeListener(gridCells);
-					window3R.getScore2().setText(Integer.toString(score2));
-					window3R.getMessage().setText(winO);
-					playSound(GAME_WIN);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnX);
-				} else {
-					empates++;
-					window3R.getScore3().setText(Integer.toString(empates));
-					window3R.getMessage().setText(tied);
-					playSound(GAME_TIED);
-					removeListener(gridCells);
-					playAgain(playAgain);
-					window3R.getMessage().setText(turnX);
+			checkBoard(player1, player2, LINEA_X, turnO, winX, GAME_WIN);
+		} else if (player1 != null && player2 != null && player2.isPlay() && !player1.isWinner()
+				&& !player2.isWinner()) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
+						player2.markCell(gridCells[i][j], new Mark(MARK_O, 'O'));
+						changeTurn(player2, player1, turnX);
+						playSound(OMOVE);
+					}
 				}
 			}
+			checkBoard(player2, player1, LINEA_O, turnX, winO, GAME_WIN);
 
 		} else if (player1 == null && player2.isPlay() && !machine.isWinner() && !player2.isWinner()) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
+						player2.markCell(gridCells[i][j], new Mark(MARK_O, 'O'));
+						changeTurn(player2, machine, turnX);
+						playSound(OMOVE);
+					}
+				}
+			}
+			checkBoard(player2, machine, LINEA_O, turnX, winO, GAME_WIN);
 
-			if (e.getSource() == gridCells[0][0].getGridCellLabel() && gridCells[0][0].isEmpty()) {
-				player2.markCell(gridCells[0][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][0].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][1].getGridCellLabel() && gridCells[0][1].isEmpty()) {
-				player2.markCell(gridCells[0][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][1].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[0][2].getGridCellLabel() && gridCells[0][2].isEmpty()) {
-				player2.markCell(gridCells[0][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[0][2].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][0].getGridCellLabel() && gridCells[1][0].isEmpty()) {
-				player2.markCell(gridCells[1][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][0].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][1].getGridCellLabel() && gridCells[1][1].isEmpty()) {
-				player2.markCell(gridCells[1][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][1].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[1][2].getGridCellLabel() && gridCells[1][2].isEmpty()) {
-				player2.markCell(gridCells[1][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[1][2].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][0].getGridCellLabel() && gridCells[2][0].isEmpty()) {
-				player2.markCell(gridCells[2][0], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][0].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][1].getGridCellLabel() && gridCells[2][1].isEmpty()) {
-				player2.markCell(gridCells[2][1], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][1].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
-			} else if (e.getSource() == gridCells[2][2].getGridCellLabel() && gridCells[2][2].isEmpty()) {
-				player2.markCell(gridCells[2][2], new Mark(MARK_O, 'O'));
-				changeTurn(gridCells[2][2].getMark(), 'O', player2, machine);
-				playSound(MARK_SOUND);
+			if (machine.isPlay() && !player2.isWinner() && !machine.isWinner()) {
+				machinePlays(true);
+				changeTurn(machine, player2, turnO);
+				checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
 			}
 
-			if (!board.isPlenty()) {
-				player2.setWinner(board.isWinner(gridCells, LINEA_O));
-				if (player2.isWinner()) {
-					score2++;
-					removeListener(gridCells);
-					window3R.getScore2().setText(Integer.toString(score2));
-					window3R.getMessage().setText(winO);
-					playSound(GAME_WIN);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnX);
+		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner())
+
+		{
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
+						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
+						changeTurn(player1, machine, turnO);
+						playSound(XMOVE);
+					}
 				}
-			} else if (board.isPlenty()) {
-				player2.setWinner(board.isWinner(gridCells, LINEA_O));
-				if (player2.isWinner()) {
-					score2++;
-					removeListener(gridCells);
-					window3R.getScore2().setText(Integer.toString(score2));
-					window3R.getMessage().setText(winO);
-					playSound(GAME_WIN);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnX);
-				} else {
-					empates++;
-					window3R.getScore3().setText(Integer.toString(empates));
-					window3R.getMessage().setText(tied);
-					playSound(GAME_TIED);
-					removeListener(gridCells);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnX);
-				}
+			}
+			checkBoard(player1, machine, LINEA_X, turnO, winX, GAME_WIN);
+			if (machine.isPlay() && !player1.isWinner() && !machine.isWinner()) {
+				machinePlays(false);
+				changeTurn(machine, player1, turnX);
+				checkBoard(machine, player1, LINEA_O, turnX, winO, GAME_WIN);
 			}
 		}
 	}
@@ -491,8 +305,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			window3R.getScore3().setForeground(Color.YELLOW);
 			window3R.getMessage().setForeground(Color.YELLOW);
 			window3R.getPanel3R().setBackground(Color.BLACK);
-			window3R.getComputer().setBackground(Color.BLACK);
-			window3R.getComputer().setForeground(Color.YELLOW);
+
 			color1 = Color.BLACK;
 			color2 = Color.YELLOW;
 
@@ -544,8 +357,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					}
 				}
 			}
-			window3R.getComputer().setBackground(Color.WHITE);
-			window3R.getComputer().setForeground(Color.BLACK);
+
 			window3R.getbackground().setForeground(Color.BLACK);
 			window3R.getbackground().setBackground(Color.WHITE);
 			window3R.getLanguage().setForeground(Color.BLACK);
@@ -611,49 +423,53 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 			spanish = true;
 
-		} else if (e.getSource() == window3R.getComputer() && player1 == null && machine.isPlay() && !player2.isWinner()
-				&& !machine.isWinner()) {
-
-			moveComputer();
-
-			if (!board.isPlenty()) {
-				machine.setWinner(board.isWinner(gridCells, LINEA_X));
-				if (machine.isWinner()) {
-					score1++;
-					removeListener(gridCells);
-					window3R.getScore1().setText(Integer.toString(score1));
-					window3R.getMessage().setText(winX);
-					playSound(GAME_WIN);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnO);
-
-				}
-			} else if (board.isPlenty()) {
-				machine.setWinner(board.isWinner(gridCells, LINEA_X));
-				if (machine.isWinner()) {
-					score1++;
-					removeListener(gridCells);
-					window3R.getScore1().setText(Integer.toString(score1));
-					window3R.getMessage().setText(winX);
-					playSound(GAME_WIN);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnO);
-				} else {
-					empates++;
-					window3R.getScore3().setText(Integer.toString(empates));
-					window3R.getMessage().setText(tied);
-					playSound(GAME_TIED);
-					removeListener(gridCells);
-					playAgain2(playAgain);
-					window3R.getMessage().setText(turnO);
-				}
-			}
-
 		}
 	}
 
-	public GridCell[][] getGridCells() {
-		return gridCells;
+	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win, String sound) {
+		if (!board.isPlenty()) {
+			player1.setWinner(board.isWinner(gridCells, mark));
+			if (player1.isWinner()) {
+
+				removeListener(gridCells);
+				if (player1.getIdPlayer() == 1) {
+					score1++;
+					window3R.getScore1().setText(Integer.toString(score1));
+				} else if (player1.getIdPlayer() == 2) {
+					score2++;
+					window3R.getScore2().setText(Integer.toString(score2));
+				}
+				window3R.getMessage().setText(win);
+				playSound(sound);
+				playAgain(playAgain, player1, player2);
+				window3R.getMessage().setText(turn);
+
+			}
+		} else if (board.isPlenty()) {
+			player1.setWinner(board.isWinner(gridCells, mark));
+			if (player1.isWinner()) {
+				removeListener(gridCells);
+				if (player1.getIdPlayer() == 1) {
+					score1++;
+					window3R.getScore1().setText(Integer.toString(score1));
+				} else if (player1.getIdPlayer() == 2) {
+					score2++;
+					window3R.getScore2().setText(Integer.toString(score2));
+				}
+				window3R.getMessage().setText(win);
+				playSound(sound);
+				playAgain(playAgain, player1, player2);
+				window3R.getMessage().setText(turn);
+			} else {
+				empates++;
+				window3R.getScore3().setText(Integer.toString(empates));
+				window3R.getMessage().setText(tied);
+				playSound(GAME_TIED);
+				removeListener(gridCells);
+				playAgain(playAgain, player1, player2);
+				window3R.getMessage().setText(turn);
+			}
+		}
 	}
 
 }

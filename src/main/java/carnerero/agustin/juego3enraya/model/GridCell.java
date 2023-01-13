@@ -5,54 +5,52 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class GridCell extends JPanel{
+public class GridCell extends JPanel {
 
 	private final int DIMENSION_WIDTH = 100;
-   	private final int DIMENSION_HEIGTH = 100;
-   	private JLabel gridCellLabel;   	
-    private char mark;
-    private boolean marked; 
-    private boolean markedImage;
-    private int posX;
-    private int posY;
-	
-	public GridCell(int posX,int posY) {	
-		this.posX=posX;
-		this.posY=posY;
-		mark=' ';
+	private final int DIMENSION_HEIGTH = 100;
+	private JLabel gridCellLabel;
+	private char mark;
+	private boolean marked;
+	private int posX;
+	private int posY;
+
+	public GridCell(int posX, int posY) {
+		this.posX = posX;
+		this.posY = posY;
+		mark = ' ';
 		gridCellLabel = new JLabel("");
 		gridCellLabel.setBackground(Color.WHITE);
-		gridCellLabel.setBounds(this.posX, this.posY, DIMENSION_WIDTH,DIMENSION_HEIGTH);
+		gridCellLabel.setBounds(this.posX, this.posY, DIMENSION_WIDTH, DIMENSION_HEIGTH);
 	}
+
 	public boolean isEmpty() {
-		if(mark==' ') {
-			this.marked=true;
-		}else {
-			this.marked=false;
+		if (mark == ' ') {
+			this.marked = true;
+		} else {
+			this.marked = false;
 		}
-		return this.marked;		
+		return this.marked;
 	}
-	public boolean isMarkPresent(char mark) {
-		if(this.mark==mark) {
-			this.markedImage=true;			
-		}
-		return this.markedImage=false;
-	}
-		
+
 	public int getPosX() {
 		return posX;
 	}
+
 	public int getPosY() {
 		return posY;
 	}
+
 	public char getMark() {
 		return mark;
 	}
+
 	public JLabel getGridCellLabel() {
 		return gridCellLabel;
 	}
+
 	public void setMark(char mark) {
 		this.mark = mark;
 	}
-	
+
 }

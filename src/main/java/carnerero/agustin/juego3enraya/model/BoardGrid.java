@@ -9,14 +9,7 @@ public class BoardGrid extends JPanel {
 
 	private JLabel boardGrid;
 	private GridCell[][] gridCells;
-	private final String LXXX = "XXX";
-	private final String LOOO = "OOO";
-	private final String LO_O = "O O";
-	private final String LOO_ = "OO ";
-	private final String L_OO = " OO";
-	private final String LX_X = "X X";
-	private final String LXX_ = "XX ";
-	private final String L_XX = " XX";
+	
 
 	public BoardGrid() {
 		// Create Board
@@ -28,16 +21,16 @@ public class BoardGrid extends JPanel {
 				BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/tableroBlack.png")));
 
 		// Create grid cells
-
-		gridCells[0][0] = new GridCell(39, 50);
-		gridCells[0][1] = new GridCell(163, 50);
-		gridCells[0][2] = new GridCell(285, 50);
-		gridCells[1][0] = new GridCell(39, 171);
-		gridCells[1][1] = new GridCell(163, 171);
-		gridCells[1][2] = new GridCell(285, 171);
-		gridCells[2][0] = new GridCell(39, 298);
-		gridCells[2][1] = new GridCell(163, 298);
-		gridCells[2][2] = new GridCell(285, 298);
+		gridCells[0][0]=new GridCell(40,40);
+		gridCells[0][1] = new GridCell(160, 40);
+		gridCells[0][2] = new GridCell(285, 40);
+		gridCells[1][0] = new GridCell(40, 160);
+		gridCells[1][1] = new GridCell(160, 160);
+		gridCells[1][2] = new GridCell(285, 160);
+		gridCells[2][0] = new GridCell(40, 285);
+		gridCells[2][1] = new GridCell(160, 285);
+		gridCells[2][2] = new GridCell(285, 285);			
+		
 
 		// Fill Board
 		fillBoard(gridCells);

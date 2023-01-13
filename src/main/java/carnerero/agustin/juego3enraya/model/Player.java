@@ -2,7 +2,7 @@ package carnerero.agustin.juego3enraya.model;
 
 
 
-public class Player extends AbstractPlayer {
+public class Player extends APlayer {
 
 	public Player(int idPlayer) {
 		super();
