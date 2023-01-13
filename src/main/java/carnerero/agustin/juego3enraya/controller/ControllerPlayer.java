@@ -8,6 +8,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -41,7 +43,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	private final String XMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/XMove.wav";
 	private final String OMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/OMove.wav";
 	private final String GAME_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/win.wav";
-	private final String VOICE_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/voz.wav";
 	private final String GAME_TIED = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/tiedGame.wav";
 	private final String INTRO = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/exit.wav";
 	private String MARK_X;
@@ -76,7 +77,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		machine.setPlay(true);
 		this.machine.setIdPlayer(1);
 		this.player2.setIdPlayer(2);
-		
 		initController();
 
 	}
@@ -117,13 +117,13 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	private void initController() {
 
+		playSound(INTRO);
 		window3R.getMessage().setText("Turno de jugador(X)");
 		board = window3R.getBoard();
 		gridCells = board.getGridCells();
 		addListener(gridCells);
 		window3R.getbackground().addActionListener(this);
-		window3R.getLanguage().addActionListener(this);
-		window3R.getComputer().addActionListener(this);
+		window3R.getLanguage().addActionListener(this);		
 		MARK_X = MARK_XY;
 		MARK_O = MARK_OY;
 		this.score1 = 0;
@@ -151,8 +151,10 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		window3R.getPlayer1().setText(playerX);
 		window3R.getPlayer2().setText(playerO);
 		window3R.getEmpate().setText(tiedM);
-		playSound(INTRO);
-
+		if (machine != null && machine.isPlay()) {
+			machinePlays(true);
+			changeTurn(machine, player2, turnO);
+		}
 	}
 
 	private void addListener(GridCell[][] gridCells) {
@@ -185,7 +187,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			addListener(gridCells);
 			break;
 		case JOptionPane.NO_OPTION:
-			System.exit(res);			
+			System.exit(res);
 			break;
 		}
 	}
@@ -204,13 +206,23 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	}
 
-	private void changeTurn(APlayer player1, APlayer player2,String turn) {		
-			player1.setPlay(false);
-			player2.setPlay(true);		
-			window3R.getMessage().setText(turn);	
+	private void changeTurn(APlayer player1, APlayer player2, String turn) {
+		player1.setPlay(false);
+		player2.setPlay(true);
+		window3R.getMessage().setText(turn);
 	}
 
-	
+	public void machinePlays(boolean max) {
+		
+			if (max) {
+				machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
+				playSound(XMOVE);
+			} else {
+				machine.markCell(machine.machinePlaysMin(board), new Mark(MARK_O, 'O'));
+				playSound(OMOVE);
+			}
+		
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
@@ -220,25 +232,24 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
 						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
-						changeTurn(player1, player2,turnO);
+						changeTurn(player1, player2, turnO);
 						playSound(XMOVE);
 					}
 				}
 			}
-			checkBoard(player1, player2, LINEA_X, turnO, winX,GAME_WIN);
-
+			checkBoard(player1, player2, LINEA_X, turnO, winX, GAME_WIN);
 		} else if (player1 != null && player2 != null && player2.isPlay() && !player1.isWinner()
 				&& !player2.isWinner()) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
 						player2.markCell(gridCells[i][j], new Mark(MARK_O, 'O'));
-						changeTurn( player2, player1,turnX);
+						changeTurn(player2, player1, turnX);
 						playSound(OMOVE);
 					}
 				}
 			}
-			checkBoard(player2, player1, LINEA_O, turnX, winO,GAME_WIN);
+			checkBoard(player2, player1, LINEA_O, turnX, winO, GAME_WIN);
 
 		} else if (player1 == null && player2.isPlay() && !machine.isWinner() && !player2.isWinner()) {
 
@@ -246,12 +257,18 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
 						player2.markCell(gridCells[i][j], new Mark(MARK_O, 'O'));
-						changeTurn(player2, machine,turnX);
+						changeTurn(player2, machine, turnX);
 						playSound(OMOVE);
 					}
 				}
 			}
-			checkBoard(player2, machine, LINEA_O, turnX, winO,GAME_WIN);
+			checkBoard(player2, machine, LINEA_O, turnX, winO, GAME_WIN);
+
+			if (machine.isPlay() && !player2.isWinner() && !machine.isWinner()) {
+				machinePlays(true);
+				changeTurn(machine, player2, turnO);
+				checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
+			}
 
 		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner())
 
@@ -260,12 +277,17 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
 						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
-						changeTurn(player1, machine,turnO);
+						changeTurn(player1, machine, turnO);
 						playSound(XMOVE);
 					}
 				}
 			}
-			checkBoard(player1, machine, LINEA_X, turnO, winX,GAME_WIN);
+			checkBoard(player1, machine, LINEA_X, turnO, winX, GAME_WIN);
+			if (machine.isPlay() && !player1.isWinner() && !machine.isWinner()) {
+				machinePlays(false);
+				changeTurn(machine, player1, turnX);
+				checkBoard(machine, player1, LINEA_O, turnX, winO, GAME_WIN);
+			}
 		}
 	}
 
@@ -284,8 +306,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			window3R.getScore3().setForeground(Color.YELLOW);
 			window3R.getMessage().setForeground(Color.YELLOW);
 			window3R.getPanel3R().setBackground(Color.BLACK);
-			window3R.getComputer().setBackground(Color.BLACK);
-			window3R.getComputer().setForeground(Color.YELLOW);
+			
 			color1 = Color.BLACK;
 			color2 = Color.YELLOW;
 
@@ -337,8 +358,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					}
 				}
 			}
-			window3R.getComputer().setBackground(Color.WHITE);
-			window3R.getComputer().setForeground(Color.BLACK);
+			
 			window3R.getbackground().setForeground(Color.BLACK);
 			window3R.getbackground().setBackground(Color.WHITE);
 			window3R.getLanguage().setForeground(Color.BLACK);
@@ -404,33 +424,20 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 			spanish = true;
 
-		} else if (e.getSource() == window3R.getComputer() && player1 == null && machine.isPlay() && !player2.isWinner()
-				&& !machine.isWinner()) {
-			machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
-			playSound(XMOVE);
-			changeTurn(machine,player2,turnO);
-			checkBoard(machine, player2, LINEA_X, turnO, winX,GAME_WIN);
-
-		} else if (e.getSource() == window3R.getComputer() && player2 == null && machine.isPlay() && !player1.isWinner()
-				&& !machine.isWinner()) {
-			machine.markCell(machine.machinePlaysMin(board), new Mark(MARK_O, 'O'));		
-			playSound(OMOVE);
-			changeTurn(machine,player1,turnX);			
-			checkBoard(machine, player1, LINEA_O, turnX, winO,GAME_WIN);
-		}
+		} 
 	}
 
-	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win,String sound) {
+	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win, String sound) {
 		if (!board.isPlenty()) {
 			player1.setWinner(board.isWinner(gridCells, mark));
 			if (player1.isWinner()) {
-				
+
 				removeListener(gridCells);
-				if(player1.getIdPlayer()==1) {
+				if (player1.getIdPlayer() == 1) {
 					score1++;
-				window3R.getScore1().setText(Integer.toString(score1));
-				}else if(player1.getIdPlayer()==2) 
-				{	score2++;
+					window3R.getScore1().setText(Integer.toString(score1));
+				} else if (player1.getIdPlayer() == 2) {
+					score2++;
 					window3R.getScore2().setText(Integer.toString(score2));
 				}
 				window3R.getMessage().setText(win);
@@ -441,15 +448,15 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 		} else if (board.isPlenty()) {
 			player1.setWinner(board.isWinner(gridCells, mark));
-			if (player1.isWinner()) {				
+			if (player1.isWinner()) {
 				removeListener(gridCells);
-				if(player1.getIdPlayer()==1) {
+				if (player1.getIdPlayer() == 1) {
 					score1++;
 					window3R.getScore1().setText(Integer.toString(score1));
-					}else if(player1.getIdPlayer()==2) {
-						score2++;
-						window3R.getScore2().setText(Integer.toString(score2));
-					}
+				} else if (player1.getIdPlayer() == 2) {
+					score2++;
+					window3R.getScore2().setText(Integer.toString(score2));
+				}
 				window3R.getMessage().setText(win);
 				playSound(sound);
 				playAgain(playAgain, player1, player2);

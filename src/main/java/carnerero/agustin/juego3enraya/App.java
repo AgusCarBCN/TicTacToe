@@ -44,9 +44,9 @@ public class App {
 		} else if (opcion == "Machine(X) vs Human(O)") {
 			player2 = new Player(2);
 			machine = new Machine(window3R.getBoard());
-			controller = ControllerPlayer.getInstance(window3R, machine, player2);			
+			controller = ControllerPlayer.getInstance(window3R, machine, player2);						
 			
-				
+			
 			
 
 		} else if (opcion == "Human(X) vs Machine(O)") {

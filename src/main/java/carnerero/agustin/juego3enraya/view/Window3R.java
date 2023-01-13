@@ -15,7 +15,7 @@ public class Window3R extends JFrame {
 	private BoardGrid board;
 	private JLabel player1, player2, empate, score1, score2, score3, message;
 	private PanelGame panel3R;
-	private JButton backGround, language, computer;
+	private JButton backGround, language;
 
 	public Window3R() {
 
@@ -41,13 +41,7 @@ public class Window3R extends JFrame {
 
 			backGround = new JButton("Claro");
 			language = new JButton("English");
-			computer = new JButton("Computer");
-
-			computer.setBounds(140, 660, 110, 35);
-			computer.setFont(font16);
-			computer.setForeground(Color.YELLOW);
-			computer.setBackground(Color.BLACK);
-			computer.setFocusable(false);
+			
 
 			backGround.setFont(font16);
 			backGround.setBounds(25, 660, 100, 35);
@@ -103,7 +97,7 @@ public class Window3R extends JFrame {
 			add(message);
 			add(backGround);
 			add(language);
-			add(computer);
+			
 
 		}
 	}
@@ -152,8 +146,6 @@ public class Window3R extends JFrame {
 		return empate;
 	}
 
-	public JButton getComputer() {
-		return computer;
-	}
+	
 
 }
