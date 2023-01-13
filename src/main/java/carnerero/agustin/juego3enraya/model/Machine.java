@@ -1,6 +1,6 @@
 package carnerero.agustin.juego3enraya.model;
 
-public class Machine extends AbstractPlayer {
+public class Machine extends APlayer {
 
 	public Machine(BoardGrid board) {
 		super();
@@ -11,7 +11,7 @@ public class Machine extends AbstractPlayer {
 
 	}
 
-	public GridCell machinePlaysFirst(BoardGrid board) {
+	public GridCell machinePlaysMax(BoardGrid board) {
 
 		GridCell[][] gridCells = board.getGridCells();
 		int bestScore = Integer.MIN_VALUE;
@@ -41,7 +41,7 @@ public class Machine extends AbstractPlayer {
 		return bestMove;
 	}
 
-	public GridCell machinePlaysSecond(BoardGrid board) {
+	public GridCell machinePlaysMin(BoardGrid board) {
 
 		GridCell[][] gridCells = board.getGridCells();
 		int bestScore = Integer.MAX_VALUE;	
@@ -129,6 +129,6 @@ public class Machine extends AbstractPlayer {
 
 		}
 		return bestScore;
-	}
+	}	
 
 }

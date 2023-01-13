@@ -2,14 +2,14 @@ package carnerero.agustin.juego3enraya.model;
 
 import javax.swing.ImageIcon;
 
-public abstract class AbstractPlayer {
+public abstract class APlayer {
 	private int idPlayer;
 	private int partidasGanadas;
 	private int partidasPerdidas;
 	private boolean isWinner;
 	private boolean play;
 
-	public AbstractPlayer() {
+	public APlayer() {
 		super();
 
 	}
