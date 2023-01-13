@@ -123,7 +123,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		gridCells = board.getGridCells();
 		addListener(gridCells);
 		window3R.getbackground().addActionListener(this);
-		window3R.getLanguage().addActionListener(this);		
+		window3R.getLanguage().addActionListener(this);
 		MARK_X = MARK_XY;
 		MARK_O = MARK_OY;
 		this.score1 = 0;
@@ -192,7 +192,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		}
 	}
 
-	public void playSound(String path) {
+	private void playSound(String path) {
 		File f = new File(path);
 		try {
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
@@ -212,16 +212,15 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		window3R.getMessage().setText(turn);
 	}
 
-	public void machinePlays(boolean max) {
-		
-			if (max) {
-				machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
-				playSound(XMOVE);
-			} else {
-				machine.markCell(machine.machinePlaysMin(board), new Mark(MARK_O, 'O'));
-				playSound(OMOVE);
-			}
-		
+	private void machinePlays(boolean max) {
+
+		if (max) {
+			machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
+			playSound(XMOVE);
+		} else {
+			machine.markCell(machine.machinePlaysMin(board), new Mark(MARK_O, 'O'));
+			playSound(OMOVE);
+		}
 	}
 
 	@Override
@@ -234,6 +233,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
 						changeTurn(player1, player2, turnO);
 						playSound(XMOVE);
+
 					}
 				}
 			}
@@ -252,7 +252,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			checkBoard(player2, player1, LINEA_O, turnX, winO, GAME_WIN);
 
 		} else if (player1 == null && player2.isPlay() && !machine.isWinner() && !player2.isWinner()) {
-
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
@@ -306,7 +305,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			window3R.getScore3().setForeground(Color.YELLOW);
 			window3R.getMessage().setForeground(Color.YELLOW);
 			window3R.getPanel3R().setBackground(Color.BLACK);
-			
+
 			color1 = Color.BLACK;
 			color2 = Color.YELLOW;
 
@@ -358,7 +357,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 					}
 				}
 			}
-			
+
 			window3R.getbackground().setForeground(Color.BLACK);
 			window3R.getbackground().setBackground(Color.WHITE);
 			window3R.getLanguage().setForeground(Color.BLACK);
@@ -424,7 +423,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 			spanish = true;
 
-		} 
+		}
 	}
 
 	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win, String sound) {

@@ -69,23 +69,20 @@ public class Window3R extends JFrame {
 			empate.setFont(font16);
 			empate.setBounds(155, 420, 100, 100);
 			score1.setFont(font20);
-			score1.setBounds(55, 485, 20, 20);
+			score1.setBounds(55, 485, 60, 30);
 			score2.setFont(font20);
-			score2.setBounds(305, 485, 20, 20);
+			score2.setBounds(305, 485, 60, 30);
 			score3.setFont(font20);
-			score3.setBounds(185, 485, 20, 20);
+			score3.setBounds(185, 485, 60, 30);			
 			message.setFont(font16);
 			message.setBounds(100, 540, 220, 30);
-
 			player1.setForeground(Color.YELLOW);
 			player2.setForeground(Color.YELLOW);
 			empate.setForeground(Color.YELLOW);
 			message.setForeground(Color.YELLOW);
-
 			score1.setForeground(Color.YELLOW);
 			score2.setForeground(Color.YELLOW);
 			score3.setForeground(Color.YELLOW);
-
 			board = new BoardGrid();
 			add(board.getBoardGrid());
 			add(player1);

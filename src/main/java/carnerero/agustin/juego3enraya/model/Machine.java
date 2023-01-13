@@ -12,7 +12,6 @@ public class Machine extends APlayer {
 	}
 
 	public GridCell machinePlaysMax(BoardGrid board) {
-
 		GridCell[][] gridCells = board.getGridCells();
 		int bestScore = Integer.MIN_VALUE;
 		int beta=Integer.MAX_VALUE;
@@ -37,7 +36,7 @@ public class Machine extends APlayer {
 				}
 			}
 		}
-
+		
 		return bestMove;
 	}
 
@@ -128,6 +127,7 @@ public class Machine extends APlayer {
 			}
 
 		}
+		
 		return bestScore;
 	}	
 

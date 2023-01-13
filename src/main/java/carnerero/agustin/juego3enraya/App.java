@@ -15,7 +15,6 @@ import carnerero.agustin.juego3enraya.model.Mark;
 import carnerero.agustin.juego3enraya.model.Player;
 import carnerero.agustin.juego3enraya.view.Window3R;
 
-
 /**
  * Hello world!
  *
@@ -32,9 +31,8 @@ public class App {
 		Player player2 = null;
 		Machine machine = null;
 		UIManager.put("text", Color.YELLOW);
-
 		Window3R window3R = new Window3R();
-		BoardGrid board = window3R.getBoard();
+		
 		Object opcion = JOptionPane.showInputDialog(window3R, "Opciones de juego", "Escoje una opcion",
 				JOptionPane.PLAIN_MESSAGE, null, options, null);
 		if (opcion == "Human vs Human") {
@@ -44,11 +42,7 @@ public class App {
 		} else if (opcion == "Machine(X) vs Human(O)") {
 			player2 = new Player(2);
 			machine = new Machine(window3R.getBoard());
-			controller = ControllerPlayer.getInstance(window3R, machine, player2);						
-			
-			
-			
-
+			controller = ControllerPlayer.getInstance(window3R, machine, player2);
 		} else if (opcion == "Human(X) vs Machine(O)") {
 			player1 = new Player(1);
 			machine = new Machine(window3R.getBoard());
