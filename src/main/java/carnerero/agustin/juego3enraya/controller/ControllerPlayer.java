@@ -8,6 +8,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioInputStream;
@@ -257,9 +259,15 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 			checkBoard(player2, machine, LINEA_O, turnX, winO, GAME_WIN);
 			if (machine.isPlay() && !player2.isWinner() && !machine.isWinner()) {
-				machinePlays(true);
-				changeTurn(machine, player2, turnO);
-				checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+				executor.schedule(new Runnable() {
+					public void run() {
+						machinePlays(true);
+						changeTurn(machine, player2, turnO);
+						checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
+					}
+				}, 1000, TimeUnit.MILLISECONDS);
+
 			}
 		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner()) {
 			for (int i = 0; i < 3; i++) {
@@ -273,9 +281,15 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 			checkBoard(player1, machine, LINEA_X, turnO, winX, GAME_WIN);
 			if (machine.isPlay() && !player1.isWinner() && !machine.isWinner()) {
-				machinePlays(false);
-				changeTurn(machine, player1, turnX);
-				checkBoard(machine, player1, LINEA_O, turnX, winO, GAME_WIN);
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+				executor.schedule(new Runnable() {
+					public void run() {
+						machinePlays(false);
+						changeTurn(machine, player1, turnX);
+						checkBoard(machine, player1, LINEA_O, turnX, winO, GAME_WIN);
+					}
+				}, 1000, TimeUnit.MILLISECONDS);
+
 			}
 		}
 	}
