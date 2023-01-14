@@ -40,6 +40,10 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	private final String MARK_OY = "/carnerero/agustin/juego3enraya/resources/Oyellow.png";
 	private final String MARK_XB = "/carnerero/agustin/juego3enraya/resources/cruz.png";
 	private final String MARK_OB = "/carnerero/agustin/juego3enraya/resources/O.png";
+	private final String SOL = "/carnerero/agustin/juego3enraya/resources/sun.png";
+	private final String LUNA = "/carnerero/agustin/juego3enraya/resources/moon.png";
+	private final String SPANISH = "/carnerero/agustin/juego3enraya/resources/spanish.png";
+	private final String ENGLISH = "/carnerero/agustin/juego3enraya/resources/english.png";
 	private final String XMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/XMove.wav";
 	private final String OMOVE = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/OMove.wav";
 	private final String GAME_WIN = "../Juego3EnRaya/src/main/java/carnerero/agustin/juego3enraya/resources/win.wav";
@@ -51,8 +55,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	private int score1, score2, empates;
 	private boolean fondoOscuro = true;
 	private boolean spanish = true;
-	private String turnX, turnO, winX, winO, tied, dark, light, playerX, playerO, tiedM, backGroundM, languageM,
-			playAgain;
+	private String turnX, turnO, winX, winO, tied, playerX, playerO, tiedM, languageM, playAgain;
 	private Color color1, color2;
 
 	private ControllerPlayer(Window3R window3R, Player player1, Player player2) {
@@ -62,8 +65,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		this.player2 = player2;
 		this.player1.setPlay(true);
 		this.player2.setPlay(false);
-		this.player1.setIdPlayer(1);
-		this.player2.setIdPlayer(2);
 		initController();
 
 	}
@@ -75,8 +76,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		this.window3R = window3R;
 		player2.setPlay(false);
 		machine.setPlay(true);
-		this.machine.setIdPlayer(1);
-		this.player2.setIdPlayer(2);
+		machine.setIdPlayer(1);
 		initController();
 
 	}
@@ -88,8 +88,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		this.window3R = window3R;
 		player1.setPlay(true);
 		machine.setPlay(false);
-		this.player1.setIdPlayer(1);
-		this.machine.setIdPlayer(2);
+		machine.setIdPlayer(2);
 		initController();
 
 	}
@@ -134,8 +133,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 		winX = "Gana el jugador(X)";
 		winO = "Gana el jugador(O)";
 		tied = " Partida empatada";
-		dark = "Oscuro";
-		light = "Claro";
 		playerX = "Jugador(X)";
 		playerO = "Jugador(O)";
 		tiedM = "Empates";
@@ -213,7 +210,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 	}
 
 	private void machinePlays(boolean max) {
-
 		if (max) {
 			machine.markCell(machine.machinePlaysMax(board), new Mark(MARK_X, 'X'));
 			playSound(XMOVE);
@@ -233,7 +229,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 						player1.markCell(gridCells[i][j], new Mark(MARK_X, 'X'));
 						changeTurn(player1, player2, turnO);
 						playSound(XMOVE);
-
 					}
 				}
 			}
@@ -250,7 +245,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 				}
 			}
 			checkBoard(player2, player1, LINEA_O, turnX, winO, GAME_WIN);
-
 		} else if (player1 == null && player2.isPlay() && !machine.isWinner() && !player2.isWinner()) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
@@ -262,16 +256,12 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 				}
 			}
 			checkBoard(player2, machine, LINEA_O, turnX, winO, GAME_WIN);
-
 			if (machine.isPlay() && !player2.isWinner() && !machine.isWinner()) {
 				machinePlays(true);
 				changeTurn(machine, player2, turnO);
 				checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
 			}
-
-		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner())
-
-		{
+		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner()) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					if (e.getSource() == gridCells[i][j].getGridCellLabel() && gridCells[i][j].isEmpty()) {
@@ -292,7 +282,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		if (e.getSource() == window3R.getbackground() && !fondoOscuro) {
 			MARK_X = MARK_XY;
 			MARK_O = MARK_OY;
@@ -327,8 +316,8 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			window3R.getbackground().setBackground(Color.BLACK);
 			window3R.getLanguage().setForeground(Color.YELLOW);
 			window3R.getLanguage().setBackground(Color.BLACK);
-			window3R.getbackground().setText(light);
 			window3R.getLanguage().setText(languageM);
+			window3R.getbackground().setIcon(new ImageIcon(getClass().getResource(SOL)));
 			fondoOscuro = true;
 		} else if (e.getSource() == window3R.getbackground() && fondoOscuro) {
 			MARK_X = MARK_XB;
@@ -362,8 +351,8 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			window3R.getbackground().setBackground(Color.WHITE);
 			window3R.getLanguage().setForeground(Color.BLACK);
 			window3R.getLanguage().setBackground(Color.WHITE);
-			window3R.getbackground().setText(dark);
 			window3R.getLanguage().setText(languageM);
+			window3R.getbackground().setIcon(new ImageIcon(getClass().getResource(LUNA)));
 			fondoOscuro = false;
 
 		} else if (e.getSource() == window3R.getLanguage() && spanish) {
@@ -373,26 +362,16 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			winX = "Player(X) wins";
 			winO = "Player(O) wins";
 			tied = "    Tied game";
-			dark = "Dark";
-			light = "Light";
 			playerX = "Player(X)";
 			playerO = "Player(O)";
 			tiedM = " Draws";
 			playAgain = "Play again?";
-
-			backGroundM = window3R.getbackground().getText();
-			window3R.getLanguage().setText("Español");
 			window3R.getPlayer1().setText(playerX);
 			window3R.getPlayer2().setText(playerO);
 			window3R.getEmpate().setText(tiedM);
 			window3R.getMessage().setText(turnX);
 			window3R.getMessage().setText(turnO);
-
-			if (backGroundM.equals("Oscuro")) {
-				window3R.getbackground().setText(dark);
-			} else if (backGroundM.equals("Claro")) {
-				window3R.getbackground().setText(light);
-			}
+			window3R.getLanguage().setIcon(new ImageIcon(getClass().getResource(SPANISH)));
 			spanish = false;
 
 		} else if (e.getSource() == window3R.getLanguage() && !spanish) {
@@ -401,36 +380,25 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			winX = "Gana el jugador(X)";
 			winO = "Gana el jugador(O)";
 			tied = " Partida empatada";
-			dark = "Oscuro";
-			light = "Claro";
 			playerX = "Jugador(X)";
 			playerO = "Jugador(O)";
 			tiedM = "Empates";
 			playAgain = "¿Jugar otra vez?";
-
-			backGroundM = window3R.getbackground().getText();
-			window3R.getLanguage().setText("English");
 			window3R.getPlayer1().setText(playerX);
 			window3R.getPlayer2().setText(playerO);
 			window3R.getEmpate().setText(tiedM);
 			window3R.getMessage().setText(turnX);
 			window3R.getMessage().setText(turnO);
-
-			if (backGroundM.equals("Dark")) {
-				window3R.getbackground().setText(dark);
-			} else if (backGroundM.equals("Light")) {
-				window3R.getbackground().setText(light);
-			}
+			window3R.getLanguage().setIcon(new ImageIcon(getClass().getResource(ENGLISH)));
 			spanish = true;
-
 		}
+
 	}
 
 	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win, String sound) {
 		if (!board.isPlenty()) {
 			player1.setWinner(board.isWinner(gridCells, mark));
 			if (player1.isWinner()) {
-
 				removeListener(gridCells);
 				if (player1.getIdPlayer() == 1) {
 					score1++;
@@ -471,5 +439,4 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 		}
 	}
-
 }

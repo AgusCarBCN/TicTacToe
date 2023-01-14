@@ -19,7 +19,6 @@ public class BoardGrid extends JPanel {
 		boardGrid.setBackground(Color.GREEN);
 		boardGrid.setIcon(new ImageIcon(
 				BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/tableroBlack.png")));
-
 		// Create grid cells
 		gridCells[0][0]=new GridCell(40,40);
 		gridCells[0][1] = new GridCell(160, 40);
@@ -29,7 +28,7 @@ public class BoardGrid extends JPanel {
 		gridCells[1][2] = new GridCell(285, 160);
 		gridCells[2][0] = new GridCell(40, 285);
 		gridCells[2][1] = new GridCell(160, 285);
-		gridCells[2][2] = new GridCell(285, 285);			
+		gridCells[2][2] = new GridCell(285, 285);	
 		
 
 		// Fill Board
@@ -80,19 +79,7 @@ public class BoardGrid extends JPanel {
 		}
 		return isPlenty;
 	}
-
-	public int emptyElmenents() {
-		int elements = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (gridCells[i][j].getMark() == ' ') {
-					elements++;
-				}
-			}
-		}
-
-		return elements;
-	}
+	
 
 	public boolean isWinner(GridCell[][] grid, String linea) {
 		boolean winner = false;
@@ -105,7 +92,6 @@ public class BoardGrid extends JPanel {
 		} else if (isWinnerD2(grid, linea)) {
 			winner = true;
 		}
-
 		return winner;
 	}
 
