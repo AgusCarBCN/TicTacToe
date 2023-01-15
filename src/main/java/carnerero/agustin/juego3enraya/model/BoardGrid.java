@@ -9,7 +9,6 @@ public class BoardGrid extends JPanel {
 
 	private JLabel boardGrid;
 	private GridCell[][] gridCells;
-	
 
 	public BoardGrid() {
 		// Create Board
@@ -19,9 +18,8 @@ public class BoardGrid extends JPanel {
 		boardGrid.setBackground(Color.GREEN);
 		boardGrid.setIcon(new ImageIcon(
 				BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/tableroBlack.png")));
-
 		// Create grid cells
-		gridCells[0][0]=new GridCell(40,40);
+		gridCells[0][0] = new GridCell(40, 40);
 		gridCells[0][1] = new GridCell(160, 40);
 		gridCells[0][2] = new GridCell(285, 40);
 		gridCells[1][0] = new GridCell(40, 160);
@@ -29,8 +27,7 @@ public class BoardGrid extends JPanel {
 		gridCells[1][2] = new GridCell(285, 160);
 		gridCells[2][0] = new GridCell(40, 285);
 		gridCells[2][1] = new GridCell(160, 285);
-		gridCells[2][2] = new GridCell(285, 285);			
-		
+		gridCells[2][2] = new GridCell(285, 285);
 
 		// Fill Board
 		fillBoard(gridCells);
@@ -81,55 +78,53 @@ public class BoardGrid extends JPanel {
 		return isPlenty;
 	}
 
-	public int emptyElmenents() {
-		int elements = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (gridCells[i][j].getMark() == ' ') {
-					elements++;
-				}
-			}
-		}
-
-		return elements;
-	}
-
-	public boolean isWinner(GridCell[][] grid, String linea) {
+	public boolean isWinner(GridCell[][] grid, String linea, boolean miniMax) {
 		boolean winner = false;
-		if (isWinnerH(grid, linea)) {
+		if (isWinnerH(grid, linea, miniMax)) {
 			winner = true;
-		} else if (isWinnerV(grid, linea)) {
+		} else if (isWinnerV(grid, linea, miniMax)) {
 			winner = true;
-		} else if (isWinnerD(grid, linea)) {
+		} else if (isWinnerD(grid, linea, miniMax)) {
 			winner = true;
-		} else if (isWinnerD2(grid, linea)) {
+		} else if (isWinnerD2(grid, linea, miniMax)) {
 			winner = true;
 		}
-
 		return winner;
 	}
 
-	
-
-	private boolean isWinnerH(GridCell[][] grid, String linea) {
+	private boolean isWinnerH(GridCell[][] grid, String linea, boolean miniMax) {
 		boolean winner = false;
 		String row = "";
 		int i = 0;
+		int r = 0;
 		while (!winner && i < 3) {
 			for (int j = 0; j < 3; j++) {
 				row += grid[i][j].getMark();
 			}
+
 			if (row.equalsIgnoreCase(linea)) {
 				winner = true;
+				if (!miniMax && linea == "XXX") {
+					for (int k = 0; k < 3; k++) {
+						gridCells[i][k].getGridCellLabel().setIcon(new ImageIcon(BoardGrid.class
+								.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+					}
+				}
+				if (!miniMax && linea == "OOO") {
+					for (int k = 0; k < 3; k++) {
+						gridCells[i][k].getGridCellLabel().setIcon(new ImageIcon(
+								BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+					}
+				}
 			} else {
 				row = "";
+				i++;
 			}
-			i++;
 		}
 		return winner;
 	}
 
-	private boolean isWinnerV(GridCell[][] grid, String linea) {
+	private boolean isWinnerV(GridCell[][] grid, String linea, boolean miniMax) {
 		boolean winner = false;
 
 		String column = "";
@@ -140,15 +135,27 @@ public class BoardGrid extends JPanel {
 			}
 			if (column.equalsIgnoreCase(linea)) {
 				winner = true;
+				if (!miniMax && linea=="XXX") {
+					for (int k = 0; k < 3; k++) {
+						gridCells[k][i].getGridCellLabel().setIcon(new ImageIcon(BoardGrid.class
+								.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+					}
+				}
+				if (!miniMax && linea == "OOO") {
+					for (int k = 0; k < 3; k++) {
+						gridCells[i][k].getGridCellLabel().setIcon(new ImageIcon(
+								BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+					}
+				}
 			} else {
 				column = "";
+				i++;
 			}
-			i++;
 		}
 		return winner;
 	}
 
-	private boolean isWinnerD(GridCell[][] grid, String linea) {
+	private boolean isWinnerD(GridCell[][] grid, String linea, boolean miniMax) {
 		boolean winner = false;
 
 		String diagonal = "";
@@ -157,11 +164,22 @@ public class BoardGrid extends JPanel {
 		}
 		if (diagonal.equalsIgnoreCase(linea)) {
 			winner = true;
+			if (!miniMax && linea == "XXX") {
+				for (int k = 0; k < 3; k++) {
+					gridCells[k][k].getGridCellLabel().setIcon(new ImageIcon(
+							BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+				}
+			} else if (!miniMax && linea == "OOO") {
+				for (int k = 0; k < 3; k++) {
+					gridCells[k][k].getGridCellLabel().setIcon(new ImageIcon(
+							BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+				}
+			}
 		}
 		return winner;
 	}
 
-	private boolean isWinnerD2(GridCell[][] grid, String linea) {
+	private boolean isWinnerD2(GridCell[][] grid, String linea, boolean miniMax) {
 		boolean winner = false;
 
 		String diagonal = "";
@@ -172,7 +190,24 @@ public class BoardGrid extends JPanel {
 		}
 		if (diagonal.equalsIgnoreCase(linea)) {
 			winner = true;
+			if (!miniMax && linea=="XXX") {
+				gridCells[0][2].getGridCellLabel().setIcon(new ImageIcon(
+						BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+				gridCells[1][1].getGridCellLabel().setIcon(new ImageIcon(
+						BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+				gridCells[2][0].getGridCellLabel().setIcon(new ImageIcon(
+						BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/cruzGreen.png")));
+			} else if (!miniMax && linea=="OOO") {
+				gridCells[0][2].getGridCellLabel().setIcon(
+						new ImageIcon(BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+				gridCells[1][1].getGridCellLabel().setIcon(
+						new ImageIcon(BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+				gridCells[2][0].getGridCellLabel().setIcon(
+						new ImageIcon(BoardGrid.class.getResource("/carnerero/agustin/juego3enraya/resources/OGreen.png")));
+			}
 		}
+
+
 		return winner;
 	}
 

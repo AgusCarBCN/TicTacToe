@@ -76,11 +76,11 @@ public class Machine extends APlayer {
 		int score;
 		int bestScore;
 		
-		if (board.isWinner(gridCells, LINEA_X)) {
+		if (board.isWinner(gridCells, LINEA_X,true)) {
 			return 1;
-		} else if (board.isWinner(gridCells, LINEA_O)) {
+		} else if (board.isWinner(gridCells, LINEA_O,true)) {
 			return -1;
-		} else if (!board.isWinner(gridCells, LINEA_X) && !board.isWinner(gridCells, LINEA_O) && board.isPlenty()) {
+		} else if (!board.isWinner(gridCells, LINEA_X,true) && !board.isWinner(gridCells, LINEA_O,true) && board.isPlenty()) {
 			return 0;
 		}
 		if (isMaximazing) {

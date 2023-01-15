@@ -2,6 +2,8 @@ package carnerero.agustin.juego3enraya.view;
 
 import java.awt.Color;
 import java.awt.Font;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,8 +17,9 @@ public class Window3R extends JFrame {
 	private BoardGrid board;
 	private JLabel player1, player2, empate, score1, score2, score3, message;
 	private PanelGame panel3R;
-	private JButton backGround, language;
-
+	private JButton language,backGround;
+	private final String SOL = "/carnerero/agustin/juego3enraya/resources/sun.png";
+	private final String ENGLISH = "/carnerero/agustin/juego3enraya/resources/english.png";
 	public Window3R() {
 
 		setTitle("Juego tres en raya");
@@ -36,25 +39,25 @@ public class Window3R extends JFrame {
 			setBounds(0, 0, 400, 750);
 			setBackground(Color.BLACK);
 			setForeground(Color.YELLOW);
-			Font font16 = new Font("Fira Code", Font.BOLD, 14);
-			Font font20 = new Font("Fira Code", Font.BOLD, 20);
-
-			backGround = new JButton("Claro");
-			language = new JButton("English");
+			Font font16 = new Font("Fira Code", Font.BOLD, 16);			
+			Font font22 = new Font("Fira Code", Font.BOLD, 22);
 			
-
-			backGround.setFont(font16);
-			backGround.setBounds(25, 660, 100, 35);
+			backGround = new JButton();		
+			language = new JButton();			
+			
+			backGround.setBounds(25, 610, 32, 32);
 			backGround.setForeground(Color.YELLOW);
 			backGround.setBackground(Color.BLACK);
 			backGround.setFocusable(false);
-
-			language.setFont(font16);
-			language.setBounds(260, 660, 110, 35);
+			backGround.setBorderPainted(false);			
+            backGround.setIcon(new ImageIcon(getClass().getResource(SOL)));			
+			
+			language.setBounds(300, 610, 32, 32);
 			language.setForeground(Color.YELLOW);
 			language.setBackground(Color.BLACK);
 			language.setFocusable(false);
-
+			language.setBorderPainted(false);	
+			language.setIcon(new ImageIcon(getClass().getResource(ENGLISH)));	
 			player1 = new JLabel();
 			player2 = new JLabel();
 			empate = new JLabel();
@@ -68,11 +71,11 @@ public class Window3R extends JFrame {
 			player2.setBounds(270, 420, 100, 100);
 			empate.setFont(font16);
 			empate.setBounds(155, 420, 100, 100);
-			score1.setFont(font20);
+			score1.setFont(font22);
 			score1.setBounds(55, 485, 60, 30);
-			score2.setFont(font20);
+			score2.setFont(font22);
 			score2.setBounds(305, 485, 60, 30);
-			score3.setFont(font20);
+			score3.setFont(font22);
 			score3.setBounds(185, 485, 60, 30);			
 			message.setFont(font16);
 			message.setBounds(100, 540, 220, 30);
