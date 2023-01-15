@@ -267,7 +267,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 						checkBoard(machine, player2, LINEA_X, turnO, winX, GAME_WIN);
 					}
 				}, 1000, TimeUnit.MILLISECONDS);
-
 			}
 		} else if (player2 == null && player1.isPlay() && !player1.isWinner() && !machine.isWinner()) {
 			for (int i = 0; i < 3; i++) {
@@ -289,7 +288,6 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 						checkBoard(machine, player1, LINEA_O, turnX, winO, GAME_WIN);
 					}
 				}, 1000, TimeUnit.MILLISECONDS);
-
 			}
 		}
 	}
@@ -411,7 +409,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 	private void checkBoard(APlayer player1, APlayer player2, String mark, String turn, String win, String sound) {
 		if (!board.isPlenty()) {
-			player1.setWinner(board.isWinner(gridCells, mark));
+			player1.setWinner(board.isWinner(gridCells, mark,false));
 			if (player1.isWinner()) {
 				removeListener(gridCells);
 				if (player1.getIdPlayer() == 1) {
@@ -428,7 +426,7 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 
 			}
 		} else if (board.isPlenty()) {
-			player1.setWinner(board.isWinner(gridCells, mark));
+			player1.setWinner(board.isWinner(gridCells, mark,false));
 			if (player1.isWinner()) {
 				removeListener(gridCells);
 				if (player1.getIdPlayer() == 1) {
@@ -453,4 +451,5 @@ public class ControllerPlayer extends MouseAdapter implements ActionListener {
 			}
 		}
 	}
+	
 }
